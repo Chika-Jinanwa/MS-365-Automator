@@ -8,9 +8,9 @@ def outlook():
     app = "Outlook"
     outlook = win32.gencache.EnsureDispatch('%s.Application' % app)
     mail =outlook.CreateItem(win32.constants.olMailItem)
-    recip = mail.Recipients.Add('jinanwaekele@gmail.com')
+    recip = mail.Recipients.Add('harryegege@gmail.com')
     subj = mail.Subject = 'Chika Testing His Automated Python Mail Script'
-    body =  "Hey Fat!;). This is Chika's automated Python Script sending you a message!"
+    body =  "Hey Harry!;). This is Chika's Automated Python Script sending you a message!"
     mail.Body = body
     mail.Send() 
 
