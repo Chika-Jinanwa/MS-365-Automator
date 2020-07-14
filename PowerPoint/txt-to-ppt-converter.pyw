@@ -5,18 +5,20 @@ import win32com.client as win32
 
 demo ='''
 PRESENTATION TITLE
-    optional subtitle
+    test title
 slide 1 title
     slide 1 bullet 1
     slide 1 bullet 2
 slide 2 title
     slide 2 bullet 1 
     slide 2 bullet 2
-
 '''
 
 
 def txtToPPt(lines):
+    speaker = win32.Dispatch("SAPI.SpVoice") 
+    speak = "Hi, this is Chika, your dedicated Microsoft Office 365 AI assistant. I will launch a demo automated powerpoint presentation. Enjoy!"
+    speaker.Speak(speak)
     ppt = win32.gencache.EnsureDispatch('Powerpoint.Application')
     pres = ppt.Presentations.Add()
     ppt.Visible = True
@@ -27,7 +29,8 @@ def txtToPPt(lines):
             continue
         line_data = line.split('    ')
         if len(line_data) ==1:
-            if line == line.upper():
+            title = (line ==line.upper()) #treats capitalized words as title
+            if title:
                 stype = win32.constants.ppLayoutTitle
             else:
                 stype = win32.constants.ppLayoutText
@@ -37,6 +40,7 @@ def txtToPPt(lines):
             body = s.Shapes(2).TextFrame.TextRange
             nline = 1
             nslide+=1
+            sleep((nslide <4) and 0.25 or 0.01)
         else:
             line = '%s\r\n' % line.lstrip()
             body.InsertAfter(line)
@@ -44,19 +48,19 @@ def txtToPPt(lines):
             para.IndentLevel = len(line_data)-1
             nline+=1
             sleep((nslide<4) and 0.25 or 0.01)
-            s = pres.Slides.Add(nslide,win32.constants.ppLayoutTitle)
-            ppt.ActiveWindow.View.GotoSlide(nslide)
-            sla= s.Shapes(1).TextFrame.TextRange
-            sla.Text = 'Loading SlideShow!'.upper()
-            sleep(2)
-            for i in range(3, 0, -1):
-                s.Shapes(1).TextFrame.TextRange.Text = str(i)
-                sleep(1)
-                pres.SlideShowSettings.ShowType=win32.constants.ppShowType-Speaker
-                ss = pres.SlideShowSettings.Run()
-                pres.ApplyTemplate()
-                s.Shapes(1).TextFrame.TextRange.Text = 'END OF PRESENTATION!'
-                s.Shapes(2).TextFrame.TextRange.Text = ''
+    s = pres.Slides.Add(nslide,win32.constants.ppLayoutTitle)
+    ppt.ActiveWindow.View.GotoSlide(nslide)
+    sla= s.Shapes(1).TextFrame.TextRange
+    sla.Text = 'Loading SlideShow!'.upper()
+    sleep(2)
+    for i in range(3, 0, -1):
+        s.Shapes(1).TextFrame.TextRange.Text = str(i)
+        sleep(1)
+    pres.SlideShowSettings.ShowType=win32.constants.ppShowTypeSpeaker
+    ss = pres.SlideShowSettings.Run()
+    pres.ApplyTemplate(r'C:\Users\Chika Jinanwa\Documents\GitHub\MS-365-Automator\PowerPoint\Conference.potx')
+    s.Shapes(1).TextFrame.TextRange.Text = 'END OF PRESENTATION!'
+    s.Shapes(2).TextFrame.TextRange.Text = ''
 def _start(ev=None):
     fn = en.get().strip()
     try:
